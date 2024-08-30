@@ -1,0 +1,74 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: stage_starting_point
+  displayName: Starting Point
+  jobs:
+  - job: Buildjob
+    steps:
+      - script: echo hello world job1
+        displayName: 'run a one line script for job1'
+
+- stage: stage_comp_a
+  dependsOn: stage_starting_point
+  displayName: Stage Component A 
+  jobs:
+  - job: Ajob
+    steps:
+      - script: echo pre-processing
+        displayName: 'run a one line script for job'
+
+
+- stage: stage_comp_b
+  dependsOn: stage_starting_point
+  displayName: Stage Component B
+  jobs:
+  - job: Bjob
+    steps:
+      - script: echo pre-processing
+        displayName: 'run a one line script for job'
+        
+- stage: stage_comp_c
+  dependsOn: stage_starting_point
+  displayName: Stage Component C   
+  jobs:
+  - job: Cjob
+    steps:
+      - script: echo pre-processing
+        displayName: 'run a one line script for job' 
+
+- stage: stage_artifacts
+  dependsOn: 
+   - stage_comp_a
+   - stage_comp_b
+   - stage_comp_c
+  displayName: Produce Artifacts  
+  jobs:
+  - job: PAjob
+    steps:
+      - script: echo pre-processing
+        displayName: 'run a one line script for job' 
+
+- stage: stage_deploy_prod
+  dependsOn: stage_artifacts
+  condition: succeeded('stage_artifacts')
+  displayName: Deploy Application   
+  jobs:
+  - job: DAjob
+    steps:
+      - script: echo pre-processing
+        displayName: 'run a one line script for job'
+
+- stage: stage_Rollback
+  dependsOn: stage_artifacts
+  condition: failed('stage_artifacts')
+  displayName: Rolling back  
+  jobs:
+  - job: RBjob
+    steps:
+      - script: echo pre-processing
+        displayName: 'run a one line script for job'
